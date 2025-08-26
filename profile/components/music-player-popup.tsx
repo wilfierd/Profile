@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
@@ -8,11 +8,16 @@ import { Play, Pause, Volume2, VolumeX, X, Music } from "lucide-react"
 
 export function MusicPlayerPopup() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(true) // Auto-start playing
-  const [volume, setVolume] = useState([30]) // Lower default volume
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [volume, setVolume] = useState([30]) // Default to 30%
   const [isMuted, setIsMuted] = useState(false)
-  const embedId = "0dHiDF_Kl7k" // Fixed embed ID for your video
-  const currentTitle = "Lofi Hip Hop Music" // Fixed title
+  const [currentTitle, setCurrentTitle] = useState("Loficity - Heart Strings")
+  const youtubeUrl = "https://youtu.be/0dHiDF_Kl7k"
+  const embedId = "0dHiDF_Kl7k"
+
+  const handleTrackClick = () => {
+    window.open(youtubeUrl, '_blank')
+  }
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying)
@@ -22,38 +27,13 @@ export function MusicPlayerPopup() {
     setIsMuted(!isMuted)
   }
 
-  // Auto-start music when component mounts
-  useEffect(() => {
-    // Small delay to ensure everything is loaded
-    const timer = setTimeout(() => {
-      setIsPlaying(true)
-    }, 2000)
-    
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 shadow-lg transition-all duration-300 hover:scale-110 border border-gray-600"
+        className="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 shadow-lg transition-all duration-300 hover:scale-105 border border-gray-600"
       >
-        <div className="relative w-full h-full flex items-center justify-center">
-          {isPlaying ? (
-            <Pause className="w-5 h-5 text-white" />
-          ) : (
-            <Play className="w-5 h-5 text-white ml-0.5" />
-          )}
-          
-          {/* Animated music waves when playing */}
-          {isPlaying && (
-            <div className="absolute -right-1 -top-1 flex space-x-px">
-              <div className="w-1 bg-green-400 rounded-full animate-bounce" style={{ height: '3px', animationDelay: '0ms' }}></div>
-              <div className="w-1 bg-green-400 rounded-full animate-bounce" style={{ height: '5px', animationDelay: '150ms' }}></div>
-              <div className="w-1 bg-green-400 rounded-full animate-bounce" style={{ height: '3px', animationDelay: '300ms' }}></div>
-            </div>
-          )}
-        </div>
+        <Music className="w-5 h-5 text-gray-300" />
       </Button>
 
       {isOpen && (
@@ -66,11 +46,17 @@ export function MusicPlayerPopup() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center">
-                    <Music className="w-6 h-6 text-white" />
+                    <Music className="w-6 h-6 text-gray-300" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white">Music Player</h2>
-                    <p className="text-gray-400">Now playing: {currentTitle}</p>
+                    <h2 className="text-xl font-bold text-white">Music Player</h2>
+                    <p 
+                      className="text-gray-400 cursor-pointer hover:text-white transition-colors"
+                      onClick={handleTrackClick}
+                      title="Click to open on YouTube"
+                    >
+                      Now playing: {currentTitle}
+                    </p>
                   </div>
                 </div>
                 <Button
@@ -83,35 +69,34 @@ export function MusicPlayerPopup() {
                 </Button>
               </div>
 
-              {/* Hidden Audio Player - YouTube embedded as audio only */}
-              <div className="hidden">
+              {/* Audio Player */}
+              <div className="mb-6">
                 <iframe
-                  width="1"
-                  height="1"
-                  src={`https://www.youtube.com/embed/${embedId}?autoplay=${isPlaying ? 1 : 0}&loop=1&playlist=${embedId}&controls=0`}
-                  title="Background Music"
+                  width="100%"
+                  height="200"
+                  src={`https://www.youtube.com/embed/${embedId}?start=3&autoplay=${isPlaying ? 1 : 0}&loop=1&playlist=${embedId}&controls=1&modestbranding=1&rel=0&volume=${volume[0]}`}
+                  title="Audio Player"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
+                  allowFullScreen
+                  className="rounded-lg bg-black"
                 />
               </div>
 
-              {/* Visual Controls */}
-              <div className="flex items-center justify-between bg-gray-800 rounded-lg p-6">
+              {/* Controls */}
+              <div className="flex items-center justify-between bg-gray-800 rounded-lg p-4">
                 <div className="flex items-center gap-4">
                   <Button
                     onClick={togglePlay}
-                    className="w-16 h-16 rounded-full bg-gray-700 hover:bg-gray-600 text-white"
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-gray-700 text-white"
                   >
-                    {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
+                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
                   </Button>
-                  <div>
-                    <p className="text-white font-semibold">{currentTitle}</p>
-                    <p className="text-gray-400 text-sm">Lofi Hip Hop • Chill Beats</p>
-                  </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <Button
                     onClick={toggleMute}
                     variant="ghost"
@@ -120,16 +105,18 @@ export function MusicPlayerPopup() {
                   >
                     {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                   </Button>
-                  <div className="w-32">
+                  <div className="w-24">
                     <Slider
-                      value={volume}
+                      value={isMuted ? [0] : volume}
                       onValueChange={setVolume}
                       max={100}
                       step={1}
                       className="w-full"
                     />
                   </div>
-                  <span className="text-sm text-gray-400 w-8 text-right">{volume[0]}</span>
+                  <span className="text-sm text-gray-400 w-8 text-right">
+                    {isMuted ? 0 : volume[0]}
+                  </span>
                 </div>
               </div>
             </div>
