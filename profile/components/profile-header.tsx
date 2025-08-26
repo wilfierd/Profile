@@ -16,7 +16,7 @@ interface ProfileHeaderProps {
 export function ProfileHeader({
   name = "Wilfierd",
   title = "IT Student", // Reverted title back to IT Student
-  profileImage = "/profile-avatar.jpg",
+  profileImage = "/Profile/profile-avatar.jpg",
   githubUrl = "https://github.com/wilfierd",
   linkedinUrl = "https://www.linkedin.com/in/wilfierddevop/",
   phoneNumber = "+84971507528",

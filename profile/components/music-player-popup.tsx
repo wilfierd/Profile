@@ -15,7 +15,6 @@ export function MusicPlayerPopup() {
   const [youtubeUrl, setYoutubeUrl] = useState("https://youtu.be/0dHiDF_Kl7k?si=huSYa8_WLeCc7A6x")
   const [embedId, setEmbedId] = useState("0dHiDF_Kl7k")
   const [currentTitle, setCurrentTitle] = useState("Default Track")
-  const [thumbnailUrl, setThumbnailUrl] = useState("")
 
   // Extract YouTube video ID from URL
   const extractVideoId = (url: string) => {
@@ -29,7 +28,6 @@ export function MusicPlayerPopup() {
     if (videoId) {
       setEmbedId(videoId)
       setCurrentTitle("YouTube Track")
-      setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`)
     }
   }
 
@@ -41,114 +39,49 @@ export function MusicPlayerPopup() {
     setIsMuted(!isMuted)
   }
 
-  // Set initial thumbnail
-  useEffect(() => {
-    if (embedId) {
-      setThumbnailUrl(`https://img.youtube.com/vi/${embedId}/maxresdefault.jpg`)
-    }
-  }, [embedId])
-
   return (
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="w-16 h-12 rounded-sm bg-gray-800 hover:bg-gray-700 shadow-lg transition-all duration-200 hover:scale-105 relative overflow-hidden border border-gray-600"
+        className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl border-2 border-white/20"
       >
-        <div className="w-full h-full bg-gradient-to-b from-gray-700 to-gray-900 rounded-sm relative p-1">
-          {/* Cassette tape housing */}
-          <div className="w-full h-full bg-black rounded-sm relative">
-            {/* Two spinning reels */}
-            <div className="absolute top-1 left-1 w-3 h-3">
-              <div
-                className={`w-full h-full rounded-full border border-gray-400 bg-gray-600 ${isPlaying ? "animate-spin" : ""} transition-all duration-300`}
-                style={{ animationDuration: "2s" }}
-              >
-                {/* Reel spokes */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                </div>
-                <div className="absolute top-0 left-1/2 w-px h-1 bg-gray-400 transform -translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-1/2 w-px h-1 bg-gray-400 transform -translate-x-1/2"></div>
-                <div className="absolute left-0 top-1/2 w-1 h-px bg-gray-400 transform -translate-y-1/2"></div>
-                <div className="absolute right-0 top-1/2 w-1 h-px bg-gray-400 transform -translate-y-1/2"></div>
-              </div>
+        <div className="relative w-full h-full flex items-center justify-center">
+          {isPlaying ? (
+            <Pause className="w-6 h-6 text-white drop-shadow-md" />
+          ) : (
+            <Play className="w-6 h-6 text-white drop-shadow-md ml-1" />
+          )}
+          
+          {/* Animated music waves when playing */}
+          {isPlaying && (
+            <div className="absolute -right-1 -top-1 flex space-x-px">
+              <div className="w-1 bg-white rounded-full animate-bounce" style={{ height: '4px', animationDelay: '0ms' }}></div>
+              <div className="w-1 bg-white rounded-full animate-bounce" style={{ height: '6px', animationDelay: '150ms' }}></div>
+              <div className="w-1 bg-white rounded-full animate-bounce" style={{ height: '4px', animationDelay: '300ms' }}></div>
             </div>
-
-            <div className="absolute top-1 right-1 w-3 h-3">
-              <div
-                className={`w-full h-full rounded-full border border-gray-400 bg-gray-600 ${isPlaying ? "animate-spin" : ""} transition-all duration-300`}
-                style={{ animationDuration: "1.8s" }}
-              >
-                {/* Reel spokes */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                </div>
-                <div className="absolute top-0 left-1/2 w-px h-1 bg-gray-400 transform -translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-1/2 w-px h-1 bg-gray-400 transform -translate-x-1/2"></div>
-                <div className="absolute left-0 top-1/2 w-1 h-px bg-gray-400 transform -translate-y-1/2"></div>
-                <div className="absolute right-0 top-1/2 w-1 h-px bg-gray-400 transform -translate-y-1/2"></div>
-              </div>
-            </div>
-
-            {/* Tape window */}
-            <div className="absolute bottom-1 left-2 right-2 h-1 bg-gradient-to-r from-amber-900 to-amber-700 rounded-sm"></div>
-
-            {/* Cassette label area */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-2 bg-gray-200 rounded-sm opacity-80">
-              <div className="text-[4px] text-black text-center leading-none pt-0.5 font-mono">TAPE</div>
-            </div>
-          </div>
+          )}
         </div>
       </Button>
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
 
-          <Card className="relative w-full max-w-4xl p-8 shadow-2xl border-2 bg-gradient-to-b from-gray-800 to-gray-900 border-gray-600">
+          <Card className="relative w-full max-w-5xl p-6 shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-gray-600">
             <div className="relative z-10">
+              {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-12 bg-black rounded-sm border border-gray-600 relative p-2">
-                    {/* Left reel */}
-                    <div className="absolute top-2 left-2 w-6 h-6">
-                      <div
-                        className={`w-full h-full rounded-full border-2 border-gray-400 bg-gray-600 ${isPlaying ? "animate-spin" : ""} transition-all duration-300`}
-                        style={{ animationDuration: "3s" }}
-                      >
-                        <div className="absolute inset-1 rounded-full border border-gray-500">
-                          <div className="absolute top-0 left-1/2 w-px h-2 bg-gray-300 transform -translate-x-1/2"></div>
-                          <div className="absolute bottom-0 left-1/2 w-px h-2 bg-gray-300 transform -translate-x-1/2"></div>
-                          <div className="absolute left-0 top-1/2 w-2 h-px bg-gray-300 transform -translate-y-1/2"></div>
-                          <div className="absolute right-0 top-1/2 w-2 h-px bg-gray-300 transform -translate-y-1/2"></div>
-                          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-gray-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Right reel */}
-                    <div className="absolute top-2 right-2 w-6 h-6">
-                      <div
-                        className={`w-full h-full rounded-full border-2 border-gray-400 bg-gray-600 ${isPlaying ? "animate-spin" : ""} transition-all duration-300`}
-                        style={{ animationDuration: "2.7s" }}
-                      >
-                        <div className="absolute inset-1 rounded-full border border-gray-500">
-                          <div className="absolute top-0 left-1/2 w-px h-2 bg-gray-300 transform -translate-x-1/2"></div>
-                          <div className="absolute bottom-0 left-1/2 w-px h-2 bg-gray-300 transform -translate-x-1/2"></div>
-                          <div className="absolute left-0 top-1/2 w-2 h-px bg-gray-300 transform -translate-y-1/2"></div>
-                          <div className="absolute right-0 top-1/2 w-2 h-px bg-gray-300 transform -translate-y-1/2"></div>
-                          <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-gray-400 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Tape mechanism */}
-                    <div className="absolute bottom-1 left-3 right-3 h-1 bg-gradient-to-r from-amber-900 via-amber-700 to-amber-900 rounded-sm"></div>
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    {isPlaying ? (
+                      <Pause className="w-6 h-6 text-white" />
+                    ) : (
+                      <Play className="w-6 h-6 text-white ml-1" />
+                    )}
                   </div>
-
                   <div>
-                    <h2 className="text-2xl font-bold text-white">Vintage Cassette Player</h2>
-                    <p className="text-gray-400">Classic Audio Experience</p>
+                    <h2 className="text-2xl font-bold text-white">Music Player</h2>
+                    <p className="text-gray-400">Now playing: {currentTitle}</p>
                   </div>
                 </div>
                 <Button
@@ -172,43 +105,59 @@ export function MusicPlayerPopup() {
                 />
                 <Button
                   onClick={handleUrlSubmit}
-                  variant="outline"
-                  className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
                 >
-                  Load Tape
+                  Load Video
                 </Button>
               </div>
 
-              {/* Track Info */}
-              <div className="mb-6 p-4 bg-gray-700 rounded-lg">
-                <h3 className="font-semibold text-white text-lg truncate">{currentTitle}</h3>
-                <p className="text-gray-400">Now Playing on Cassette</p>
+              {/* Video Player */}
+              <div className="relative bg-black rounded-lg overflow-hidden mb-6">
+                <iframe
+                  width="100%"
+                  height="400"
+                  src={`https://www.youtube.com/embed/${embedId}?autoplay=${isPlaying ? 1 : 0}&enablejsapi=1`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="rounded-lg"
+                />
               </div>
 
               {/* Controls */}
-              <div className="flex items-center justify-center gap-6 mb-6">
-                <Button
-                  onClick={togglePlay}
-                  className="w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg"
-                  disabled={!embedId}
-                >
-                  {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
-                </Button>
-              </div>
+              <div className="flex items-center justify-between bg-gray-800 rounded-lg p-4">
+                <div className="flex items-center gap-4">
+                  <Button
+                    onClick={togglePlay}
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-gray-700 text-white"
+                  >
+                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  </Button>
+                </div>
 
-              {/* Volume Control */}
-              <div className="flex items-center gap-4 bg-gray-700 p-4 rounded-lg">
-                <Button variant="ghost" size="sm" onClick={toggleMute} className="text-white hover:bg-gray-600">
-                  {isMuted || volume[0] === 0 ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                </Button>
-                <Slider
-                  value={isMuted ? [0] : volume}
-                  onValueChange={setVolume}
-                  max={100}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-white font-mono w-12 text-right">{isMuted ? 0 : volume[0]}%</span>
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={toggleMute}
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-gray-700 text-white"
+                  >
+                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                  </Button>
+                  <div className="w-24">
+                    <Slider
+                      value={volume}
+                      onValueChange={setVolume}
+                      max={100}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
+                  <span className="text-sm text-gray-400 w-8 text-right">{volume[0]}</span>
+                </div>
               </div>
             </div>
           </Card>

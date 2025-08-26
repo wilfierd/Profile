@@ -60,37 +60,67 @@ export function GitHubContributions() {
       const reposData = await reposResponse.json()
       setRecentRepos(reposData)
 
-      // Fetch real contributions data using GitHub's contribution API
+      // Try multiple APIs for real GitHub contributions
+      let contributionsFound = false
+      
+      // Method 1: Try GitHub Contributions API
       try {
         const contributionsResponse = await fetch(
-          `https://github-contributions-api.jogruber.de/v4/${username}?y=last`
+          `https://github-contributions-api.jogruber.de/v4/${username}`
         )
-        const contributionsData = await contributionsResponse.json()
-        
-        if (contributionsData.contributions) {
-          const realContributions = contributionsData.contributions.map((week: { days: Array<{ date: string, contributionCount: number }> }) =>
-            week.days.map((day: { date: string, contributionCount: number }) => ({
-              date: day.date,
-              count: day.contributionCount,
-              level: Math.min(Math.max(Math.ceil(day.contributionCount / 3), 0), 4)
-            }))
-          ).flat()
+        if (contributionsResponse.ok) {
+          const contributionsData = await contributionsResponse.json()
           
-          setContributions(realContributions)
-          
-          const totalContributions = contributionsData.totalContributions || realContributions.reduce((sum: number, day: ContributionDay) => sum + day.count, 0)
-          setStats({
-            totalContributions,
-            longestStreak: calculateLongestStreak(realContributions),
-            currentStreak: calculateCurrentStreak(realContributions),
-            totalRepositories: userData.public_repos,
-          })
-        } else {
-          throw new Error("No contributions data available")
+          if (contributionsData.contributions && contributionsData.contributions.length > 0) {
+            const realContributions = contributionsData.contributions.map((week: any) =>
+              week.days.map((day: any) => ({
+                date: day.date,
+                count: day.contributionCount,
+                level: day.contributionLevel
+              }))
+            ).flat()
+            
+            setContributions(realContributions)
+            
+            setStats({
+              totalContributions: contributionsData.totalContributions,
+              longestStreak: calculateLongestStreak(realContributions),
+              currentStreak: calculateCurrentStreak(realContributions),
+              totalRepositories: userData.public_repos,
+            })
+            contributionsFound = true
+          }
         }
-      } catch (contributionsError) {
-        console.warn("Failed to fetch real contributions, using fallback data:", contributionsError)
-        // Fallback to generating data based on repo activity
+      } catch (error) {
+        console.warn("Method 1 failed:", error)
+      }
+
+      // Method 2: Try alternative API
+      if (!contributionsFound) {
+        try {
+          const response = await fetch(`https://api.github.com/users/${username}/events?per_page=100`)
+          if (response.ok) {
+            const events = await response.json()
+            const contributionData = processEventsToContributions(events)
+            setContributions(contributionData)
+            
+            const totalContributions = contributionData.reduce((sum, day) => sum + day.count, 0)
+            setStats({
+              totalContributions,
+              longestStreak: calculateLongestStreak(contributionData),
+              currentStreak: calculateCurrentStreak(contributionData),
+              totalRepositories: userData.public_repos,
+            })
+            contributionsFound = true
+          }
+        } catch (error) {
+          console.warn("Method 2 failed:", error)
+        }
+      }
+
+      // Fallback: Use repository-based data
+      if (!contributionsFound) {
+        console.warn("Using fallback data based on repository activity")
         const fallbackData = generateRealisticData(reposData)
         setContributions(fallbackData)
 
@@ -108,6 +138,37 @@ export function GitHubContributions() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const processEventsToContributions = (events: any[]) => {
+    const contributions: ContributionDay[] = []
+    const today = new Date()
+    const startDate = new Date(today.getFullYear(), 0, 1)
+    
+    // Create a map of dates to contribution counts
+    const contributionMap = new Map<string, number>()
+    
+    events.forEach(event => {
+      if (['PushEvent', 'CreateEvent', 'PullRequestEvent', 'IssuesEvent'].includes(event.type)) {
+        const date = new Date(event.created_at).toISOString().split('T')[0]
+        contributionMap.set(date, (contributionMap.get(date) || 0) + 1)
+      }
+    })
+    
+    // Generate contribution data for the year
+    for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0]
+      const count = contributionMap.get(dateStr) || 0
+      const level = count === 0 ? 0 : Math.min(Math.ceil(count / 2), 4)
+      
+      contributions.push({
+        date: dateStr,
+        count,
+        level,
+      })
+    }
+    
+    return contributions
   }
 
   const generateRealisticData = (repos: GitHubRepo[]) => {
