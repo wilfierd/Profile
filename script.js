@@ -164,14 +164,7 @@ function updateVisitorCounter() {
 
 document.addEventListener('DOMContentLoaded', updateVisitorCounter);
 
-// GitHub Contributions
-document.addEventListener('DOMContentLoaded', function() {
-    const githubUsername = 'wilfierd'; // Replace with your GitHub username
-    if (githubUsername) {
-        GitHubCalendar(".calendar", githubUsername, { responsive: true });
-    }
-});
-
+// All GitHub calendar and snake game code removed, as it's being replaced.
 
 // YouTube Music Player
 let player;

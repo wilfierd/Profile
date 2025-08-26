@@ -127,8 +127,70 @@ body {
   -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  margin: 24px 0;
+  margin: 24px auto; /* Centering */
   border: 1px solid var(--line);
+  max-width: 600px; /* Reducing width */
+}
+
+.contribution-graph-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.contribution-graph-container img {
+    max-width: 100%;
+}
+
+/* GitHub Calendar Customization to match image */
+.calendar .width-full > .float-left {
+    display: none; /* Hide the "summary" text */
+}
+
+.calendar .contrib-legend {
+    text-align: right;
+    color: #ccc;
+    font-size: 12px;
+    padding: 5px;
+}
+
+.calendar .calendar-graph text.month {
+    fill: #ccc !important;
+}
+
+.calendar .calendar-graph text.wday {
+    fill: #ccc !important;
+}
+
+/* The actual contribution squares */
+.calendar .calendar-graph rect.day {
+    shape-rendering: geometricPrecision;
+    stroke: #333; /* Faint stroke between squares */
+    stroke-width: 1px;
+}
+
+.calendar .calendar-graph rect.day[data-level="0"] {
+    fill: #ebedf0; /* Light Gray */
+}
+
+.calendar .calendar-graph rect.day[data-level="1"] {
+    fill: #9be9a8; /* Green shades */
+}
+
+.calendar .calendar-graph rect.day[data-level="2"] {
+    fill: #40c463;
+}
+
+.calendar .calendar-graph rect.day[data-level="3"] {
+    fill: #30a14e;
+}
+
+.calendar .calendar-graph rect.day[data-level="4"] {
+    fill: #216e39;
+}
+
+/* Hide the summary stats table below the graph */
+.calendar-graph + table {
+    display: none;
 }
 
 .contact-section h2,
@@ -141,8 +203,8 @@ body {
 
 .contact-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: 1fr; /* Single column layout */
+  gap: 20px; /* Adjusted gap for single column */
 }
 
 .contact-card {
