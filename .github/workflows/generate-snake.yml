@@ -1,6 +1,9 @@
 name: Generate Snake Animation
 
 on:
+  push:
+    branches:
+      - raw-project # Trigger the action on push to this branch
   schedule:
     - cron: "0 0 * * *" # Runs every day at midnight
   workflow_dispatch: # Allows manual triggering
@@ -12,6 +15,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          # Specify the branch to check out
+          ref: raw-project
 
       - name: Generate snake animation
         uses: Platane/snk@v2

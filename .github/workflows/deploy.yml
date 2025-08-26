@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, raw-project ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, raw-project ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
