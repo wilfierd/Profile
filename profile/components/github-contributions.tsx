@@ -48,26 +48,60 @@ export function GitHubContributions() {
     setError("")
 
     try {
+      // Fetch user data
       const userResponse = await fetch(`https://api.github.com/users/${username}`)
       if (!userResponse.ok) {
         throw new Error("User not found")
       }
       const userData = await userResponse.json()
 
+      // Fetch repositories
       const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=5`)
       const reposData = await reposResponse.json()
       setRecentRepos(reposData)
 
-      const mockData = generateRealisticData(reposData)
-      setContributions(mockData)
+      // Fetch real contributions data using GitHub's contribution API
+      try {
+        const contributionsResponse = await fetch(
+          `https://github-contributions-api.jogruber.de/v4/${username}?y=last`
+        )
+        const contributionsData = await contributionsResponse.json()
+        
+        if (contributionsData.contributions) {
+          const realContributions = contributionsData.contributions.map((week: { days: Array<{ date: string, contributionCount: number }> }) =>
+            week.days.map((day: { date: string, contributionCount: number }) => ({
+              date: day.date,
+              count: day.contributionCount,
+              level: Math.min(Math.max(Math.ceil(day.contributionCount / 3), 0), 4)
+            }))
+          ).flat()
+          
+          setContributions(realContributions)
+          
+          const totalContributions = contributionsData.totalContributions || realContributions.reduce((sum: number, day: ContributionDay) => sum + day.count, 0)
+          setStats({
+            totalContributions,
+            longestStreak: calculateLongestStreak(realContributions),
+            currentStreak: calculateCurrentStreak(realContributions),
+            totalRepositories: userData.public_repos,
+          })
+        } else {
+          throw new Error("No contributions data available")
+        }
+      } catch (contributionsError) {
+        console.warn("Failed to fetch real contributions, using fallback data:", contributionsError)
+        // Fallback to generating data based on repo activity
+        const fallbackData = generateRealisticData(reposData)
+        setContributions(fallbackData)
 
-      const totalContributions = mockData.reduce((sum, day) => sum + day.count, 0)
-      setStats({
-        totalContributions,
-        longestStreak: calculateLongestStreak(mockData),
-        currentStreak: calculateCurrentStreak(mockData),
-        totalRepositories: userData.public_repos,
-      })
+        const totalContributions = fallbackData.reduce((sum, day) => sum + day.count, 0)
+        setStats({
+          totalContributions,
+          longestStreak: calculateLongestStreak(fallbackData),
+          currentStreak: calculateCurrentStreak(fallbackData),
+          totalRepositories: userData.public_repos,
+        })
+      }
     } catch (err) {
       setError(`Failed to fetch data for ${username}`)
       console.error(err)
