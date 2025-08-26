@@ -4,18 +4,15 @@
   box-sizing: border-box;
 }
 
-/* Minimalist Theme Tokens */
+/* Vercel-inspired Dark Theme - Black & White */
 :root {
-  --bg: #f7f9fc; /* page background */
-  --panel: #ffffff; /* cards/panels */
-  --panel-alt: #ffffff; /* unify */
-  --text: #1d2433; /* primary text */
-  --muted: #5a6577; /* secondary text */
-  --line: #e6ebf2; /* subtle borders */
-  --brand: #2f74ff; /* soft blue accent */
-  --brand-2: #5b8bff; /* lighter accent */
-  --surface: #f4f7fb; /* page bg tint */
-  --shadow: 0 8px 24px rgba(41, 55, 88, 0.08);
+  --bg: #000000;
+  --panel: #111111;
+  --text: #ffffff;
+  --muted: #888888;
+  --line: #333333;
+  --brand: #ffffff; /* No brand color, use white */
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   --radius-lg: 14px;
   --radius-md: 12px;
   --radius-sm: 10px;
@@ -32,10 +29,44 @@ body {
   min-height: 100vh;
 }
 
+#video-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#video-bg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+#youtube-player-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 /* Hero Section */
@@ -51,17 +82,13 @@ body {
 
 .avatar {
   margin-bottom: 20px;
-}
-
-.avatar {
-  margin-bottom: 20px;
   width: 120px;
   height: 120px;
   border-radius: 50%;
   overflow: hidden;
   margin-left: auto;
   margin-right: auto;
-  border: 4px solid var(--brand);
+  border: 4px solid var(--line);
   box-shadow: var(--shadow);
 }
 
@@ -72,37 +99,40 @@ body {
 }
 
 .name {
-  font-size: 2.4rem;
+  font-size: 2.8rem;
   font-weight: 600;
   margin-bottom: 6px;
 }
 
 .title {
-  font-size: 1.05rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 400;
   margin-bottom: 6px;
-  color: var(--brand);
+  color: var(--muted);
 }
 
 .subtitle {
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 400;
   max-width: 640px;
   margin: 0 auto;
   color: var(--muted);
 }
 
-/* Contact Section */
-.contact-section {
-  background: var(--panel);
+/* Contact & GitHub Sections */
+.contact-section,
+.github-section {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   margin: 24px 0;
-  box-shadow: var(--shadow);
   border: 1px solid var(--line);
 }
 
-.contact-section h2 {
+.contact-section h2,
+.github-section h2 {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 20px;
@@ -122,34 +152,25 @@ body {
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text);
-  transition: background 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease, transform 0.12s ease;
   border: 1px solid var(--line);
-  background: var(--panel);
+  background: transparent;
 }
 
 .contact-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow);
-  background: #fbfdff;
-}
-
-/* Unified neutral cards with subtle accents on hover via icons */
-/* Specific brand icon accents (no empty rulesets) */
-.contact-card.phone i {
-  color: #4ea1ff;
-}
-.contact-card.github i {
-  color: #9aa3ff;
-}
-.contact-card.linkedin i {
-  color: #7aa9ff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .contact-card i {
   font-size: 1.4rem;
   margin-right: 12px;
-  opacity: 1;
-  color: var(--brand);
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.contact-card:hover i {
+  color: var(--text);
 }
 
 .contact-info h3 {
@@ -163,189 +184,36 @@ body {
   color: var(--muted);
 }
 
-/* GitHub Section */
-.github-section {
-  background: var(--panel);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin: 24px 0;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--line);
-}
-
-.github-section h2 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: var(--text);
-}
-
-/* Music Player */
-#music-player {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1000;
-}
-
-#play-pause-btn {
-  background-color: #fff;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  color: var(--text);
-  font-size: 1.2rem;
-  transition: all 0.2s ease;
-}
-
-#play-pause-btn:hover {
-  transform: scale(1.1);
-  background-color: var(--brand);
-  color: #fff;
-}
-
-#youtube-player-container {
-  display: none;
-}
-
-/* Skills Section */
-.skills-section {
-  display: none;
-}
-
-.skills-section h2 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: var(--text);
-}
-
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-}
-
-.skill-card {
-  text-align: center;
-  padding: 20px 16px;
-  border-radius: var(--radius-md);
-  background: var(--panel);
-  transition: background 0.2s ease, transform 0.12s ease, box-shadow 0.2s ease;
-  border: 1px solid var(--line);
-}
-
-.skill-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow);
-  background: #fbfdff;
-}
-
-.skill-card i {
-  font-size: 2rem;
-  color: var(--brand);
-  margin-bottom: 10px;
-}
-
-.skill-card h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--text);
-}
-
-.skill-card p {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-/* About Section */
-.about-section {
-  display: none;
-}
-
-/* Image Section */
-.image-section {
-  display: none;
-}
-
-.image-section h2 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: var(--text);
-}
-
-.image-frame {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: #fbfdff;
-}
-
-.image-frame img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.about-section h2 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: var(--text);
-}
-
-.about-content p {
-  font-size: 0.98rem;
-  line-height: 1.8;
-  color: var(--muted);
-  margin-bottom: 28px;
-  text-align: center;
-  max-width: 760px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 30px;
-  margin-top: 40px;
-}
-
-.stat {
-  text-align: center;
-  padding: 18px;
-  border-radius: var(--radius-md);
-  background: var(--panel);
-  color: var(--text);
-  border: 1px solid var(--line);
-}
-
-.stat h3 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 4px;
-  color: var(--brand);
-}
-
-.stat p {
-  font-size: 0.88rem;
-  color: var(--muted);
-}
-
 /* Footer */
 .footer {
   text-align: center;
   padding: 32px 0;
   color: var(--muted);
+  position: relative;
+}
+
+.footer-controls {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#mute-unmute-btn {
+  background: none;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+#mute-unmute-btn:hover {
+  color: var(--text);
+  border-color: var(--text);
 }
 
 .footer p {
@@ -383,27 +251,19 @@ body {
   }
 
   .contact-section,
-  .skills-section,
-  .about-section {
+  .github-section {
     padding: 30px 20px;
   }
 
   .contact-grid {
     grid-template-columns: 1fr;
   }
-
-  .skills-grid {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-
-  .stats {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 480px) {
-  .avatar i {
-    font-size: 72px;
+  .avatar {
+    width: 90px;
+    height: 90px;
   }
 
   .name {
@@ -417,9 +277,5 @@ body {
   .contact-card i {
     font-size: 1.3rem;
     margin-right: 10px;
-  }
-
-  .skill-card i {
-    font-size: 1.7rem;
   }
 }

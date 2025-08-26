@@ -179,10 +179,20 @@ const videoId = '0dHiDF_Kl7k';
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-player-container', {
-        height: '0',
-        width: '0',
+        height: '100%',
+        width: '100%',
         videoId: videoId,
         playerVars: {
+            'autoplay': 1,
+            'controls': 0,
+            'showinfo': 0,
+            'modestbranding': 1,
+            'loop': 1,
+            'fs': 0,
+            'cc_load_policy': 0,
+            'iv_load_policy': 3,
+            'autohide': 0,
+            'playlist': videoId,
             'playsinline': 1
         },
         events: {
@@ -193,28 +203,25 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    // Player is ready
+    event.target.mute();
+    event.target.playVideo();
 }
 
-let isPlaying = false;
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
-        isPlaying = true;
-        document.getElementById('play-pause-btn').innerHTML = '<i class="fas fa-pause"></i>';
-    } else {
-        isPlaying = false;
-        document.getElementById('play-pause-btn').innerHTML = '<i class="fas fa-play"></i>';
+        document.getElementById('video-bg').style.opacity = 1;
     }
 }
 
-document.getElementById('play-pause-btn').addEventListener('click', () => {
-    if (isPlaying) {
-        player.pauseVideo();
+document.getElementById('mute-unmute-btn').addEventListener('click', () => {
+    if (player.isMuted()) {
+        player.unMute();
+        document.getElementById('mute-unmute-btn').innerHTML = '<i class="fas fa-volume-up"></i>';
     } else {
-        player.playVideo();
+        player.mute();
+        document.getElementById('mute-unmute-btn').innerHTML = '<i class="fas fa-volume-mute"></i>';
     }
 });
-
 
 // Add CSS for ripple effect
 const style = document.createElement('style');
