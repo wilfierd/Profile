@@ -2,7 +2,6 @@ import { ProfileHeader } from "@/components/profile-header"
 import { MusicPlayerPopup } from "@/components/music-player-popup"
 import { GitHubContributions } from "@/components/github-contributions"
 import { SnakeGame } from "@/components/snake-game"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function ProfilePage() {
   return (
@@ -21,23 +20,12 @@ export default function ProfilePage() {
         <MusicPlayerPopup />
       </div>
 
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
       <div className="p-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Header Section with Profile */}
+          {/* Single Row Layout */}
           <div className="flex flex-col lg:flex-row gap-8 mb-8">
-            {/* Profile Image and Info - Left Side */}
-            <div className="lg:sticky lg:top-6 lg:self-start">
-              <ProfileHeader />
-            </div>
-
-            {/* Main Content Area - Right Side */}
-            <div className="flex-1 space-y-6">
-              <GitHubContributions />
-            </div>
+            <ProfileHeader />
+            <GitHubContributions />
           </div>
 
           <SnakeGame />

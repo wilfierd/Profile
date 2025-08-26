@@ -3,33 +3,16 @@
 import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Slider } from "@/components/ui/slider"
-import { Play, Pause, Volume2, VolumeX, X } from "lucide-react"
+import { Play, Pause, Volume2, VolumeX, X, Music } from "lucide-react"
 
 export function MusicPlayerPopup() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [volume, setVolume] = useState([50])
+  const [isPlaying, setIsPlaying] = useState(true) // Auto-play on load
+  const [volume, setVolume] = useState([30])
   const [isMuted, setIsMuted] = useState(false)
-  const [youtubeUrl, setYoutubeUrl] = useState("https://youtu.be/0dHiDF_Kl7k?si=huSYa8_WLeCc7A6x")
-  const [embedId, setEmbedId] = useState("0dHiDF_Kl7k")
-  const [currentTitle, setCurrentTitle] = useState("Default Track")
-
-  // Extract YouTube video ID from URL
-  const extractVideoId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
-    const match = url.match(regExp)
-    return match && match[2].length === 11 ? match[2] : null
-  }
-
-  const handleUrlSubmit = () => {
-    const videoId = extractVideoId(youtubeUrl)
-    if (videoId) {
-      setEmbedId(videoId)
-      setCurrentTitle("YouTube Track")
-    }
-  }
+  const [embedId] = useState("0dHiDF_Kl7k") // Fixed video ID
+  const [currentTitle] = useState("Background Music")
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying)
@@ -39,115 +22,95 @@ export function MusicPlayerPopup() {
     setIsMuted(!isMuted)
   }
 
+  // Auto-play when component mounts
+  useEffect(() => {
+    setIsPlaying(true)
+  }, [])
+
   return (
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl border-2 border-white/20"
+        className="w-12 h-12 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/20 shadow-lg transition-all duration-300 hover:scale-105"
       >
         <div className="relative w-full h-full flex items-center justify-center">
           {isPlaying ? (
-            <Pause className="w-6 h-6 text-white drop-shadow-md" />
+            <Music className="w-5 h-5 text-white animate-pulse" />
           ) : (
-            <Play className="w-6 h-6 text-white drop-shadow-md ml-1" />
+            <Play className="w-5 h-5 text-white ml-0.5" />
           )}
           
-          {/* Animated music waves when playing */}
+          {/* Sound waves animation when playing */}
           {isPlaying && (
             <div className="absolute -right-1 -top-1 flex space-x-px">
-              <div className="w-1 bg-white rounded-full animate-bounce" style={{ height: '4px', animationDelay: '0ms' }}></div>
-              <div className="w-1 bg-white rounded-full animate-bounce" style={{ height: '6px', animationDelay: '150ms' }}></div>
-              <div className="w-1 bg-white rounded-full animate-bounce" style={{ height: '4px', animationDelay: '300ms' }}></div>
+              <div className="w-0.5 bg-white rounded-full animate-pulse" style={{ height: '3px', animationDelay: '0ms' }}></div>
+              <div className="w-0.5 bg-white rounded-full animate-pulse" style={{ height: '5px', animationDelay: '200ms' }}></div>
+              <div className="w-0.5 bg-white rounded-full animate-pulse" style={{ height: '3px', animationDelay: '400ms' }}></div>
             </div>
           )}
         </div>
       </Button>
 
+      {/* Hidden iframe for audio playback */}
+      <iframe
+        width="0"
+        height="0"
+        src={`https://www.youtube.com/embed/${embedId}?autoplay=1&loop=1&playlist=${embedId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`}
+        title="Background music player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        style={{ display: 'none' }}
+      />
+
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
 
-          <Card className="relative w-full max-w-5xl p-6 shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border border-gray-600">
+          <Card className="relative w-full max-w-md p-6 shadow-2xl bg-black/90 backdrop-blur-md border border-white/20">
             <div className="relative z-10">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                    {isPlaying ? (
-                      <Pause className="w-6 h-6 text-white" />
-                    ) : (
-                      <Play className="w-6 h-6 text-white ml-1" />
-                    )}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                    <Music className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white">Music Player</h2>
-                    <p className="text-gray-400">Now playing: {currentTitle}</p>
+                    <h2 className="text-lg font-bold text-white">Music Player</h2>
+                    <p className="text-gray-400 text-sm">{currentTitle}</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsOpen(false)}
-                  className="hover:bg-gray-700 text-white"
+                  className="hover:bg-white/10 text-white"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </Button>
-              </div>
-
-              {/* URL Input */}
-              <div className="flex gap-3 mb-6">
-                <Input
-                  placeholder="Paste YouTube URL here..."
-                  value={youtubeUrl}
-                  onChange={(e) => setYoutubeUrl(e.target.value)}
-                  className="flex-1 bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  onKeyDown={(e) => e.key === "Enter" && handleUrlSubmit()}
-                />
-                <Button
-                  onClick={handleUrlSubmit}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
-                >
-                  Load Video
-                </Button>
-              </div>
-
-              {/* Video Player */}
-              <div className="relative bg-black rounded-lg overflow-hidden mb-6">
-                <iframe
-                  width="100%"
-                  height="400"
-                  src={`https://www.youtube.com/embed/${embedId}?autoplay=${isPlaying ? 1 : 0}&enablejsapi=1`}
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="rounded-lg"
-                />
               </div>
 
               {/* Controls */}
-              <div className="flex items-center justify-between bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center gap-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-center">
                   <Button
                     onClick={togglePlay}
-                    variant="ghost"
-                    size="sm"
-                    className="hover:bg-gray-700 text-white"
+                    className="w-16 h-16 rounded-full bg-white/20 hover:bg-white/30 text-white border border-white/30"
                   >
-                    {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                    {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
                   </Button>
                 </div>
 
-                <div className="flex items-center gap-3">
+                {/* Volume Control */}
+                <div className="flex items-center gap-3 bg-white/10 rounded-lg p-3">
                   <Button
                     onClick={toggleMute}
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-gray-700 text-white"
+                    className="hover:bg-white/10 text-white"
                   >
-                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                    {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                   </Button>
-                  <div className="w-24">
+                  <div className="flex-1">
                     <Slider
                       value={volume}
                       onValueChange={setVolume}
