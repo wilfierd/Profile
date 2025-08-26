@@ -20,20 +20,7 @@ export default function ProfilePage() {
         <MusicPlayerPopup />
       </div>
 
-      {/* Hidden audio player for background music */}
-      <div className="hidden">
-        <iframe
-          width="1"
-          height="1"
-          src="https://www.youtube.com/embed/0dHiDF_Kl7k?autoplay=1&loop=1&playlist=0dHiDF_Kl7k&controls=0&mute=0&volume=30&start=3"
-          title="Background Music"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          style={{ opacity: 0, position: 'absolute', pointerEvents: 'none' }}
-        />
-      </div>
-
-            <div className="p-6 relative z-10">
+      <div className="p-6 relative z-10">
         <div className="max-w-4xl mx-auto">
           {/* Single Column Layout - All components stacked vertically */}
           <div className="space-y-8">
@@ -43,13 +30,17 @@ export default function ProfilePage() {
             </div>
             
             {/* GitHub Contributions Section */}
-            <div className="w-full">
-              <GitHubContributions />
+            <div className="w-full flex justify-center">
+              <div className="w-full max-w-3xl">
+                <GitHubContributions />
+              </div>
             </div>
             
             {/* Snake Game Section */}
-            <div className="w-full">
-              <SnakeGame />
+            <div className="w-full flex justify-center">
+              <div className="w-full max-w-3xl">
+                <SnakeGame />
+              </div>
             </div>
           </div>
         </div>

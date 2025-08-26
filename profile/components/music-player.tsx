@@ -51,12 +51,12 @@ export function MusicPlayer({ defaultUrl = "" }: MusicPlayerProps) {
   }
 
   return (
-    <Card className="p-6 transition-all duration-300 hover:shadow-lg">
-      <div className="flex items-center gap-2 mb-4">
+    <Card className="p-6 transition-all duration-300 hover:shadow-lg max-w-md mx-auto">
+      <div className="flex items-center gap-2 mb-4 justify-center">
         <Music className="w-5 h-5 text-primary" />
         <h2 className="text-xl font-semibold text-card-foreground">Music Player</h2>
         {embedId && (
-          <Badge variant={isPlaying ? "default" : "secondary"} className="ml-auto">
+          <Badge variant={isPlaying ? "default" : "secondary"} className="ml-2">
             {isPlaying ? "Playing" : "Paused"}
           </Badge>
         )}
@@ -76,27 +76,14 @@ export function MusicPlayer({ defaultUrl = "" }: MusicPlayerProps) {
         </Button>
       </div>
 
-      {/* YouTube Embed */}
+      {/* Track Info - No Video Embed */}
       {embedId && (
-        <div className="mb-4 rounded-lg overflow-hidden shadow-inner">
-          <iframe
-            width="100%"
-            height="200"
-            src={`https://www.youtube.com/embed/${embedId}?enablejsapi=1&controls=0&modestbranding=1`}
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="rounded-lg"
-          />
+        <div className="mb-4 p-4 bg-muted rounded-lg text-center">
+          <Music className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+          <h3 className="font-medium text-card-foreground">{currentTitle}</h3>
+          <p className="text-sm text-muted-foreground">Audio Only</p>
         </div>
       )}
-
-      {/* Track Info */}
-      <div className="mb-4">
-        <h3 className="font-medium text-card-foreground truncate">{currentTitle}</h3>
-        <p className="text-sm text-muted-foreground">YouTube Player</p>
-      </div>
 
       {/* Controls */}
       <div className="flex items-center justify-center gap-4 mb-4">
@@ -122,12 +109,12 @@ export function MusicPlayer({ defaultUrl = "" }: MusicPlayerProps) {
       </div>
 
       {/* Volume Control */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 justify-center">
         <Button variant="ghost" size="sm" onClick={toggleMute} className="hover:bg-primary/10">
           {isMuted || volume[0] === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </Button>
 
-        <Slider value={isMuted ? [0] : volume} onValueChange={setVolume} max={100} step={1} className="flex-1" />
+        <Slider value={isMuted ? [0] : volume} onValueChange={setVolume} max={100} step={1} className="w-32" />
 
         <span className="text-sm text-muted-foreground w-8">{isMuted ? 0 : volume[0]}</span>
       </div>
