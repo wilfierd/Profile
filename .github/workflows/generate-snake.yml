@@ -23,8 +23,10 @@ jobs:
         uses: Platane/snk@v2
         with:
           github_user_name: wilfierd
-          # Generate the animation into the dist folder
-          outputs: dist/github-contribution-grid-snake.svg
+          # The correct syntax for the output path
+          outputs: |
+            dist/github-contribution-grid-snake.svg
+            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
 
       - name: Deploy to output branch
         uses: peaceiris/actions-gh-pages@v3
