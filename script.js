@@ -17,28 +17,7 @@ window.addEventListener('load', function() {
     document.body.classList.add('loaded');
 });
 
-// Intersection Observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observe all sections for scroll animations
-document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('.contact-section, .skills-section, .about-section');
-    sections.forEach(section => {
-        observer.observe(section);
-    });
-});
+// Minimal mode: no scroll observers needed
 
 // Add click effects to contact cards
 document.querySelectorAll('.contact-card').forEach(card => {
@@ -63,16 +42,66 @@ document.querySelectorAll('.contact-card').forEach(card => {
     });
 });
 
-// Add hover effect to skill cards
-document.querySelectorAll('.skill-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-5px) scale(1.02)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-    });
+// Inject GitHub Pages (github.io) card if GitHub username is present on page
+document.addEventListener('DOMContentLoaded', function() {
+    const githubCard = document.querySelector('.contact-card.github .contact-info p');
+    if (!githubCard) return;
+
+    const username = (githubCard.textContent || '').trim().replace(/^@/, '');
+    if (!username) return;
+
+    const pagesUrl = `https://${username}.github.io`;
+
+    // Avoid duplicate injection
+    const grid = document.querySelector('.contact-grid');
+    const exists = grid && grid.querySelector('[data-generated="github-pages"]');
+    if (grid && !exists) {
+        const a = document.createElement('a');
+        a.href = pagesUrl;
+        a.target = '_blank';
+        a.className = 'contact-card';
+        a.setAttribute('data-generated', 'github-pages');
+        a.innerHTML = `
+            <i class="fas fa-globe"></i>
+            <div class="contact-info">
+                <h3>GitHub Pages</h3>
+                <p>${pagesUrl}</p>
+            </div>
+        `;
+        grid.appendChild(a);
+    }
 });
+
+// Auto-link raw URLs (including github.io) inside any element with data-auto-link-scope
+document.addEventListener('DOMContentLoaded', function() {
+    const scope = document.querySelector('[data-auto-link-scope]');
+    if (!scope) return;
+
+    const urlRegex = /(https?:\/\/[\w.-]+\.[A-Za-z]{2,}(?:\/[\w#?=&.%_-]*)?)/g;
+
+    function linkify(node) {
+        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
+        const textNodes = [];
+        let current;
+        while ((current = walker.nextNode())) {
+            // skip if parent already a link or icon
+            if (current.parentElement && (current.parentElement.tagName === 'A' || current.parentElement.classList.contains('fa'))) continue;
+            if (current.nodeValue && urlRegex.test(current.nodeValue)) {
+                textNodes.push(current);
+            }
+        }
+        textNodes.forEach(tn => {
+            const html = tn.nodeValue.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+            const span = document.createElement('span');
+            span.innerHTML = html;
+            tn.parentNode.replaceChild(span, tn);
+        });
+    }
+
+    linkify(scope);
+});
+
+// Removed skill card hover handlers (section removed)
 
 // Add typing effect to the title
 function typeWriter(element, text, speed = 100) {
@@ -100,16 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 });
 
-// Add parallax effect to hero section
-window.addEventListener('scroll', function() {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    const rate = scrolled * -0.5;
-    
-    if (hero) {
-        hero.style.transform = `translateY(${rate}px)`;
-    }
-});
+// Parallax removed for a simpler, calmer layout
 
 // Add phone number formatting
 function formatPhoneNumber(phoneNumber) {
@@ -143,6 +163,58 @@ function updateVisitorCounter() {
 }
 
 document.addEventListener('DOMContentLoaded', updateVisitorCounter);
+
+// GitHub Contributions
+document.addEventListener('DOMContentLoaded', function() {
+    const githubUsername = 'wilfierd'; // Replace with your GitHub username
+    if (githubUsername) {
+        GitHubCalendar(".calendar", githubUsername, { responsive: true });
+    }
+});
+
+
+// YouTube Music Player
+let player;
+const videoId = '0dHiDF_Kl7k'; 
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player-container', {
+        height: '0',
+        width: '0',
+        videoId: videoId,
+        playerVars: {
+            'playsinline': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    // Player is ready
+}
+
+let isPlaying = false;
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        document.getElementById('play-pause-btn').innerHTML = '<i class="fas fa-pause"></i>';
+    } else {
+        isPlaying = false;
+        document.getElementById('play-pause-btn').innerHTML = '<i class="fas fa-play"></i>';
+    }
+}
+
+document.getElementById('play-pause-btn').addEventListener('click', () => {
+    if (isPlaying) {
+        player.pauseVideo();
+    } else {
+        player.playVideo();
+    }
+});
+
 
 // Add CSS for ripple effect
 const style = document.createElement('style');
