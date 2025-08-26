@@ -31,21 +31,21 @@ export function MusicPlayerPopup() {
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="w-12 h-12 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/20 shadow-lg transition-all duration-300 hover:scale-105"
+        className="w-12 h-12 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-600 shadow-lg transition-all duration-300 hover:scale-105"
       >
         <div className="relative w-full h-full flex items-center justify-center">
           {isPlaying ? (
-            <Music className="w-5 h-5 text-white animate-pulse" />
+            <Music className="w-5 h-5 text-gray-300 animate-pulse" />
           ) : (
-            <Play className="w-5 h-5 text-white ml-0.5" />
+            <Play className="w-5 h-5 text-gray-300 ml-0.5" />
           )}
           
           {/* Sound waves animation when playing */}
           {isPlaying && (
             <div className="absolute -right-1 -top-1 flex space-x-px">
-              <div className="w-0.5 bg-white rounded-full animate-pulse" style={{ height: '3px', animationDelay: '0ms' }}></div>
-              <div className="w-0.5 bg-white rounded-full animate-pulse" style={{ height: '5px', animationDelay: '200ms' }}></div>
-              <div className="w-0.5 bg-white rounded-full animate-pulse" style={{ height: '3px', animationDelay: '400ms' }}></div>
+              <div className="w-0.5 bg-green-400 rounded-full animate-pulse" style={{ height: '3px', animationDelay: '0ms' }}></div>
+              <div className="w-0.5 bg-green-400 rounded-full animate-pulse" style={{ height: '5px', animationDelay: '200ms' }}></div>
+              <div className="w-0.5 bg-green-400 rounded-full animate-pulse" style={{ height: '3px', animationDelay: '400ms' }}></div>
             </div>
           )}
         </div>

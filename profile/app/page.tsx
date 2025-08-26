@@ -22,10 +22,14 @@ export default function ProfilePage() {
 
       <div className="p-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          {/* Single Row Layout */}
-          <div className="flex flex-col lg:flex-row gap-8 mb-8">
-            <ProfileHeader />
-            <GitHubContributions />
+          {/* Single Column Layout - Everything stacked vertically */}
+          <div className="space-y-8 mb-8">
+            <div className="w-full">
+              <ProfileHeader />
+            </div>
+            <div className="w-full">
+              <GitHubContributions />
+            </div>
           </div>
 
           <SnakeGame />
