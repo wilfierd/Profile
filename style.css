@@ -120,25 +120,43 @@ body {
 }
 
 /* Contact & GitHub Sections */
-.contact-section,
+.contact-section {
+    background: rgba(17, 17, 17, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin: 24px auto; /* Centering */
+    border: 1px solid var(--line);
+    max-width: 700px; /* Made wider */
+}
+
 .github-section {
-  background: rgba(17, 17, 17, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  margin: 24px auto; /* Centering */
-  border: 1px solid var(--line);
-  max-width: 600px; /* Reducing width */
+    background: rgba(17, 17, 17, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin: 24px auto; /* Centering */
+    border: 1px solid var(--line);
+    max-width: 700px; /* Reduced to match contact section */
 }
 
 .contribution-graph-container {
     text-align: center;
     margin-top: 20px;
+    padding: 15px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .contribution-graph-container img {
+    width: 100%;
     max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    transform: scale(1.1);
+    transform-origin: center;
 }
 
 /* GitHub Calendar Customization to match image */
@@ -214,25 +232,49 @@ body {
   border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text);
-  transition: background 0.2s ease, transform 0.12s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--line);
   background: transparent;
 }
 
 .contact-card:hover {
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.05);
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .contact-card i {
-  font-size: 1.4rem;
-  margin-right: 12px;
-  color: var(--muted);
-  transition: color 0.2s ease;
+  font-size: 1.2rem;
+  margin-right: 15px;
+  color: var(--text);
+  transition: all 0.3s ease;
+  width: 20px;
+  text-align: center;
 }
 
 .contact-card:hover i {
   color: var(--text);
+}
+
+/* Elegant platform-specific styling */
+.contact-card.phone:hover {
+  border-color: #10b981;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+}
+
+.contact-card.github:hover {
+  border-color: #6366f1;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2);
+}
+
+.contact-card.linkedin:hover {
+  border-color: #0ea5e9;
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.2);
+}
+
+.contact-card.facebook:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
 }
 
 .contact-info h3 {
@@ -252,6 +294,33 @@ body {
   padding: 32px 0;
   color: var(--muted);
   position: relative;
+}
+
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.footer-icons a {
+  color: var(--muted);
+  font-size: 1.2rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.footer-icons a:hover {
+  color: var(--text);
+  transform: translateY(-3px) scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .footer-controls {

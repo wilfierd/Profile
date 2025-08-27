@@ -42,30 +42,21 @@ document.querySelectorAll('.contact-card').forEach(card => {
     });
 });
 
-// Inject GitHub Pages (github.io) card if GitHub username is present on page
+// Inject Facebook card 
 document.addEventListener('DOMContentLoaded', function() {
-    const githubCard = document.querySelector('.contact-card.github .contact-info p');
-    if (!githubCard) return;
-
-    const username = (githubCard.textContent || '').trim().replace(/^@/, '');
-    if (!username) return;
-
-    const pagesUrl = `https://${username}.github.io`;
-
-    // Avoid duplicate injection
     const grid = document.querySelector('.contact-grid');
-    const exists = grid && grid.querySelector('[data-generated="github-pages"]');
+    const exists = grid && grid.querySelector('[data-generated="facebook"]');
     if (grid && !exists) {
         const a = document.createElement('a');
-        a.href = pagesUrl;
+        a.href = 'https://www.facebook.com/nguyen.hieu.641586/';
         a.target = '_blank';
-        a.className = 'contact-card';
-        a.setAttribute('data-generated', 'github-pages');
+        a.className = 'contact-card facebook';
+        a.setAttribute('data-generated', 'facebook');
         a.innerHTML = `
-            <i class="fas fa-globe"></i>
+            <i class="fab fa-facebook"></i>
             <div class="contact-info">
-                <h3>GitHub Pages</h3>
-                <p>${pagesUrl}</p>
+                <h3>Facebook</h3>
+                <p>nguyen.hieu.641586</p>
             </div>
         `;
         grid.appendChild(a);
@@ -168,7 +159,7 @@ document.addEventListener('DOMContentLoaded', updateVisitorCounter);
 
 // YouTube Music Player
 let player;
-const videoId = '0dHiDF_Kl7k';
+const videoId = '0dHiDF_Kl7k'; 
 let progressInterval;
 
 function onYouTubeIframeAPIReady() {
@@ -198,7 +189,7 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     event.target.playVideo();
-    event.target.mute(); // Muted by default as you requested
+    event.target.setVolume(50); // Set default volume to 50%
 }
 
 function onPlayerStateChange(event) {
