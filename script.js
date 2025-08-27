@@ -189,7 +189,18 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     event.target.playVideo();
+    event.target.unMute(); // Ensure player is unmuted
     event.target.setVolume(50); // Set default volume to 50%
+    
+    // Update UI to reflect the state
+    const volumeSlider = document.getElementById('volume-slider');
+    if (volumeSlider) {
+        volumeSlider.value = 50;
+    }
+    const muteBtn = document.getElementById('mute-unmute-btn');
+    if (muteBtn) {
+        muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+    }
 }
 
 function onPlayerStateChange(event) {

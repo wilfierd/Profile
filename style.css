@@ -2,6 +2,67 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Disable text selection on all interactive elements (except text inputs) */
+button, 
+input[type="button"], 
+input[type="submit"], 
+input[type="range"],
+.contact-card,
+.footer-icons,
+.footer-icons *,
+[role="button"],
+.clickable {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Disable text selection specifically for modal content but allow for text inputs */
+#music-player-modal .modal-content,
+.player-header,
+.player-header *,
+.song-info,
+.song-info *,
+.time-stamps,
+.time-stamps *,
+.modal-content h1,
+.modal-content h2, 
+.modal-content h3,
+.modal-content p {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Allow text selection only for text input fields */
+input[type="text"], 
+input[type="url"], 
+input[type="email"],
+input[type="password"],
+textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+}
+
+/* Also allow selection for any content that should be copyable */
+code, pre {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
 }
 
 /* Vercel-inspired Dark Theme - Black & White */
@@ -235,6 +296,10 @@ body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--line);
   background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .contact-card:hover {
@@ -315,6 +380,10 @@ body {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.05);
   text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .footer-icons a:hover {
@@ -423,11 +492,19 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    padding: 10px 15px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 1.2rem;
     transition: background-color 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #mute-unmute-btn:hover {
@@ -442,12 +519,20 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    padding: 10px 15px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 1.2rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #music-player-button:hover {
@@ -468,6 +553,10 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease-in-out;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 #music-player-modal:not(.hidden) {
@@ -485,6 +574,10 @@ body {
     position: relative;
     color: white;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .close-btn {
@@ -573,6 +666,10 @@ body {
     margin: 0;
     font-size: 1.2rem;
     font-weight: 500;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 #song-youtube-link {
@@ -580,6 +677,10 @@ body {
     color: #aaa;
     text-decoration: none;
     transition: color 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 #song-youtube-link:hover {
