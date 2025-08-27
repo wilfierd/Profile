@@ -276,6 +276,14 @@ function hideModal() {
 musicPlayerButton.addEventListener('click', showModal);
 closeModalButton.addEventListener('click', hideModal);
 
+// Close modal when clicking outside of it
+musicPlayerModal.addEventListener('click', (event) => {
+    // Only close if clicking on the modal background, not the content
+    if (event.target === musicPlayerModal) {
+        hideModal();
+    }
+});
+
 function extractVideoId(url) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
