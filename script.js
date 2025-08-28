@@ -161,6 +161,7 @@ document.addEventListener('DOMContentLoaded', updateVisitorCounter);
 let player;
 const videoId = '0dHiDF_Kl7k'; 
 let progressInterval;
+let musicStarted = false; // Track if music has started from scrolling
 
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('youtube-player-container', {
@@ -188,11 +189,11 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onPlayerReady(event) {
-    event.target.playVideo();
-    event.target.unMute(); // Ensure player is unmuted
-    event.target.setVolume(50); // Set default volume to 50%
+    event.target.setVolume(50);
+    event.target.unMute();
+    targetVolume = 50; // Initialize target volume
     
-    // Update UI to reflect the state
+    // Update UI
     const volumeSlider = document.getElementById('volume-slider');
     if (volumeSlider) {
         volumeSlider.value = 50;
@@ -201,16 +202,24 @@ function onPlayerReady(event) {
     if (muteBtn) {
         muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
     }
+    
+    // Don't auto-play immediately, wait for user scroll
+    console.log('YouTube player ready - waiting for user scroll to start music');
 }
 
 function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         document.getElementById('video-bg').style.opacity = 1; // Make video visible
+        musicStarted = true; // Mark that music has started
+
+        // Add glowing effect to music button
+        addMusicButtonGlow();
 
         const videoData = player.getVideoData();
         document.getElementById('song-title').textContent = videoData.title;
         document.getElementById('song-youtube-link').href = player.getVideoUrl();
         
+        // Always show the playing view when video is playing
         document.getElementById('player-input-view').classList.add('hidden');
         document.getElementById('player-playing-view').classList.remove('hidden');
 
@@ -223,6 +232,9 @@ function onPlayerStateChange(event) {
     } else {
         clearInterval(progressInterval);
         playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+
+        // Remove glowing effect when not playing
+        removeMusicButtonGlow();
 
         // Only switch view if the video has ended
         if (event.data === YT.PlayerState.ENDED) {
@@ -273,7 +285,29 @@ function hideModal() {
     musicPlayerModal.classList.add('hidden');
 }
 
-musicPlayerButton.addEventListener('click', showModal);
+musicPlayerButton.addEventListener('click', () => {
+    if (player) {
+        const currentVideoData = player.getVideoData();
+        const currentVideoId = currentVideoData ? currentVideoData.video_id : null;
+        const playerState = player.getPlayerState();
+        
+        // Only load video if:
+        // - No video loaded yet (UNSTARTED)
+        // - Different video is loaded
+        // - Video has ended
+        if (playerState === YT.PlayerState.UNSTARTED || 
+            currentVideoId !== videoId || 
+            playerState === YT.PlayerState.ENDED) {
+            player.loadVideoById(videoId);
+        }
+        
+        // Always show the player view (not input view)
+        document.getElementById('player-input-view').classList.add('hidden');
+        document.getElementById('player-playing-view').classList.remove('hidden');
+    }
+    showModal();
+});
+
 closeModalButton.addEventListener('click', hideModal);
 
 // Close modal when clicking outside of it
@@ -329,6 +363,8 @@ playPauseBtn.addEventListener('click', () => {
 });
 
 changeVideoBtn.addEventListener('click', () => {
+    // Clear the input field for new URL
+    youtubeUrlInput.value = '';
     document.getElementById('player-input-view').classList.remove('hidden');
     document.getElementById('player-playing-view').classList.add('hidden');
 });
@@ -342,17 +378,181 @@ cancelChangeBtn.addEventListener('click', () => {
 });
 
 volumeSlider.addEventListener('input', () => {
-    player.setVolume(volumeSlider.value);
-    if (player.isMuted() && volumeSlider.value > 0) {
+    const newVolume = volumeSlider.value;
+    player.setVolume(newVolume);
+    targetVolume = newVolume; // Update target volume (safe to update here)
+    
+    // Stop any ongoing fades since user is manually adjusting
+    clearInterval(fadeInterval);
+    isFading = false;
+    
+    if (player.isMuted() && newVolume > 0) {
         player.unMute();
         document.getElementById('mute-unmute-btn').innerHTML = '<i class="fas fa-volume-up"></i>';
-    } else if (!player.isMuted() && volumeSlider.value == 0) {
+    } else if (!player.isMuted() && newVolume == 0) {
         player.mute();
         document.getElementById('mute-unmute-btn').innerHTML = '<i class="fas fa-volume-mute"></i>';
     }
 });
 
-// Add CSS for ripple effect
+// Start music on any user interaction (scroll OR click)
+function startMusicOnInteraction() {
+    if (musicStarted || !player) return;
+    
+    try {
+        player.playVideo();
+        musicStarted = true;
+        console.log('🎵 Music started from user interaction');
+        
+        // Remove all listeners since we only need it once
+        removeInteractionListeners();
+        
+    } catch (error) {
+        console.log('Music start failed, but will try again on next interaction');
+    }
+}
+
+function removeInteractionListeners() {
+    // Remove scroll listeners
+    window.removeEventListener('scroll', startMusicOnInteraction);
+    document.removeEventListener('touchmove', startMusicOnInteraction);
+    document.removeEventListener('wheel', startMusicOnInteraction);
+    
+    // Remove click listeners
+    document.removeEventListener('click', startMusicOnInteraction);
+    document.removeEventListener('touchstart', startMusicOnInteraction);
+}
+
+// Smooth volume transitions when switching tabs
+let targetVolume = 50; // The true target volume (never changes during fades)
+let fadeInterval;
+let isFading = false;
+
+function fadeVolumeOut() {
+    if (!player || !musicStarted) return;
+    
+    clearInterval(fadeInterval);
+    isFading = true;
+    
+    // Only save current volume as target if we're not already fading
+    if (!isFading || player.getVolume() === targetVolume) {
+        const currentVol = player.getVolume();
+        if (currentVol > 0) {
+            targetVolume = currentVol; // Only save if not already at 0
+        }
+    }
+    
+    // Dim the glow effect when audio fades out
+    dimMusicButtonGlow();
+    
+    let currentVol = player.getVolume();
+    
+    fadeInterval = setInterval(() => {
+        currentVol -= 5;
+        if (currentVol <= 0) {
+            currentVol = 0;
+            player.setVolume(0);
+            clearInterval(fadeInterval);
+            isFading = false;
+            console.log('🔇 Music faded out - user left tab');
+        } else {
+            player.setVolume(currentVol);
+        }
+    }, 50); // Smooth 1-second fade out
+}
+
+function fadeVolumeIn() {
+    if (!player || !musicStarted) return;
+    
+    clearInterval(fadeInterval);
+    isFading = true;
+    let currentVol = player.getVolume();
+    
+    // Restore the glow effect when audio fades in
+    restoreMusicButtonGlow();
+    
+    fadeInterval = setInterval(() => {
+        currentVol += 5;
+        if (currentVol >= targetVolume) {
+            currentVol = targetVolume;
+            player.setVolume(targetVolume);
+            clearInterval(fadeInterval);
+            isFading = false;
+            console.log(`🔊 Music faded in to ${targetVolume}% - user returned to tab`);
+        } else {
+            player.setVolume(currentVol);
+        }
+    }, 50); // Smooth 1-second fade in
+}
+
+// Handle page visibility changes (tab switching)
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        // User switched to another tab - fade out music
+        fadeVolumeOut();
+    } else {
+        // User came back to tab - fade in music
+        fadeVolumeIn();
+    }
+});
+
+// Handle window focus/blur (clicking on other applications)
+window.addEventListener('blur', function() {
+    // User clicked outside browser - fade out music
+    fadeVolumeOut();
+});
+
+window.addEventListener('focus', function() {
+    // User came back to browser - fade in music
+    fadeVolumeIn();
+});
+
+// Add interaction listeners when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Scroll events
+    window.addEventListener('scroll', startMusicOnInteraction, { passive: true });
+    document.addEventListener('touchmove', startMusicOnInteraction, { passive: true });
+    document.addEventListener('wheel', startMusicOnInteraction, { passive: true });
+    
+    // Click events  
+    document.addEventListener('click', startMusicOnInteraction, { passive: true });
+    document.addEventListener('touchstart', startMusicOnInteraction, { passive: true });
+});
+
+// Music button glow effects
+function addMusicButtonGlow() {
+    const musicBtn = document.getElementById('music-player-button');
+    if (musicBtn) {
+        musicBtn.classList.add('music-playing');
+        console.log('✨ Music button glow activated');
+    }
+}
+
+function removeMusicButtonGlow() {
+    const musicBtn = document.getElementById('music-player-button');
+    if (musicBtn) {
+        musicBtn.classList.remove('music-playing', 'music-dimmed');
+        console.log('⚫ Music button glow removed');
+    }
+}
+
+function dimMusicButtonGlow() {
+    const musicBtn = document.getElementById('music-player-button');
+    if (musicBtn && musicBtn.classList.contains('music-playing')) {
+        musicBtn.classList.add('music-dimmed');
+        console.log('🔅 Music button glow dimmed');
+    }
+}
+
+function restoreMusicButtonGlow() {
+    const musicBtn = document.getElementById('music-player-button');
+    if (musicBtn && musicBtn.classList.contains('music-playing')) {
+        musicBtn.classList.remove('music-dimmed');
+        console.log('✨ Music button glow restored');
+    }
+}
+
+// Add CSS for ripple effect and music button glow
 const style = document.createElement('style');
 style.textContent = `
     .contact-card {
@@ -374,6 +574,75 @@ style.textContent = `
             transform: scale(4);
             opacity: 0;
         }
+    }
+    
+    /* Music button glow effects - Gray/Light theme */
+    #music-player-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+    
+    #music-player-button.music-playing {
+        box-shadow: 
+            0 0 20px rgba(200, 200, 200, 0.8),
+            0 0 40px rgba(180, 180, 180, 0.6),
+            0 0 60px rgba(160, 160, 160, 0.4),
+            inset 0 0 20px rgba(255, 255, 255, 0.2);
+        animation: musicPulse 2s ease-in-out infinite;
+        border: 2px solid rgba(220, 220, 220, 0.5);
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    #music-player-button.music-playing.music-dimmed {
+        box-shadow: 
+            0 0 10px rgba(180, 180, 180, 0.4),
+            0 0 20px rgba(160, 160, 160, 0.3);
+        animation: musicPulseDimmed 3s ease-in-out infinite;
+        background: rgba(255, 255, 255, 0.08);
+    }
+    
+    @keyframes musicPulse {
+        0%, 100% {
+            box-shadow: 
+                0 0 20px rgba(200, 200, 200, 0.8),
+                0 0 40px rgba(180, 180, 180, 0.6),
+                0 0 60px rgba(160, 160, 160, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+            transform: scale(1);
+        }
+        50% {
+            box-shadow: 
+                0 0 30px rgba(220, 220, 220, 1.0),
+                0 0 50px rgba(200, 200, 200, 0.8),
+                0 0 80px rgba(180, 180, 180, 0.6),
+                inset 0 0 25px rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+    }
+    
+    @keyframes musicPulseDimmed {
+        0%, 100% {
+            box-shadow: 
+                0 0 8px rgba(160, 160, 160, 0.4),
+                0 0 16px rgba(140, 140, 140, 0.3);
+        }
+        50% {
+            box-shadow: 
+                0 0 12px rgba(180, 180, 180, 0.5),
+                0 0 24px rgba(160, 160, 160, 0.4);
+        }
+    }
+    
+    /* Add subtle glow to the icon inside - Light theme */
+    #music-player-button.music-playing i {
+        color: #e0e0e0;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     }
 `;
 document.head.appendChild(style);
