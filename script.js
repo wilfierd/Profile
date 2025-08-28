@@ -203,8 +203,12 @@ function onPlayerReady(event) {
         muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
     }
     
-    // Don't auto-play immediately, wait for user scroll
-    console.log('YouTube player ready - waiting for user scroll to start music');
+    // Add interaction listeners now that player is ready
+    setTimeout(() => {
+        addInteractionListeners();
+    }, 500); // Small delay to ensure everything is ready
+    
+    console.log('YouTube player ready - waiting for user interaction to start music');
 }
 
 function onPlayerStateChange(event) {
@@ -396,31 +400,55 @@ volumeSlider.addEventListener('input', () => {
 });
 
 // Start music on any user interaction (scroll OR click)
-function startMusicOnInteraction() {
+function startMusicOnInteraction(event) {
     if (musicStarted || !player) return;
     
-    try {
-        player.playVideo();
+    // Debug log to see what triggered it
+    const eventType = event && event.type ? event.type : 'unknown';
+    console.log('🎯 Interaction detected:', eventType);
+    
+    // Try to play video
+    const playPromise = player.playVideo();
+    
+    // Handle the promise if it exists (modern browsers)
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            // Success!
+            musicStarted = true;
+            console.log('🎵 Music started from user interaction:', eventType);
+            removeInteractionListeners();
+        }).catch(error => {
+            console.log('❌ Autoplay blocked for:', eventType, '- waiting for click');
+            
+            console.log('🖱️ Autoplay failed - will try again on next interaction');
+        });
+    } else {
+        // Older browsers - assume it worked
         musicStarted = true;
-        console.log('🎵 Music started from user interaction');
-        
-        // Remove all listeners since we only need it once
+        console.log('🎵 Music started from user interaction:', eventType);
         removeInteractionListeners();
-        
-    } catch (error) {
-        console.log('Music start failed, but will try again on next interaction');
     }
 }
 
-function removeInteractionListeners() {
-    // Remove scroll listeners
-    window.removeEventListener('scroll', startMusicOnInteraction);
-    document.removeEventListener('touchmove', startMusicOnInteraction);
-    document.removeEventListener('wheel', startMusicOnInteraction);
+function addInteractionListeners() {
+    // Only use CLICK events to start music (most reliable for autoplay)
+    document.addEventListener('click', startMusicOnInteraction, { passive: true });
+    document.addEventListener('touchstart', startMusicOnInteraction, { passive: true });
     
-    // Remove click listeners
+    // Add keydown as backup (arrow keys, space, etc.)
+    document.addEventListener('keydown', startMusicOnInteraction, { passive: true });
+    
+    console.log('🎧 Interaction listeners added - ready for click/touch/key to start music');
+    console.log('💡 Scroll removed to avoid conflict with tab-switching fade logic');
+}
+
+function removeInteractionListeners() {
+    // Remove all listeners
     document.removeEventListener('click', startMusicOnInteraction);
     document.removeEventListener('touchstart', startMusicOnInteraction);
+    document.removeEventListener('keydown', startMusicOnInteraction);
+    
+    console.log('🔇 All interaction listeners removed - music started');
 }
 
 // Smooth volume transitions when switching tabs
@@ -507,17 +535,7 @@ window.addEventListener('focus', function() {
     fadeVolumeIn();
 });
 
-// Add interaction listeners when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Scroll events
-    window.addEventListener('scroll', startMusicOnInteraction, { passive: true });
-    document.addEventListener('touchmove', startMusicOnInteraction, { passive: true });
-    document.addEventListener('wheel', startMusicOnInteraction, { passive: true });
-    
-    // Click events  
-    document.addEventListener('click', startMusicOnInteraction, { passive: true });
-    document.addEventListener('touchstart', startMusicOnInteraction, { passive: true });
-});
+// Interaction listeners are now added when YouTube player is ready (see onPlayerReady function)
 
 // Music button glow effects
 function addMusicButtonGlow() {
